@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Field, Input } from '@/components/ui/input';
 import { Consent } from './Consent';
 
 /** Подключение к партнерской программе. */
@@ -33,8 +35,8 @@ export function PartnerJoinForm() {
 
   if (done) {
     return (
-      <div className="card">
-        <p style={{ margin: 0 }}>
+      <div className="max-w-lg rounded-lg border border-rule bg-page p-6">
+        <p className="text-[17px] text-ink/90">
           Заявка принята. Ссылка для входа в кабинет отправлена на указанную почту.
         </p>
       </div>
@@ -42,40 +44,32 @@ export function PartnerJoinForm() {
   }
 
   return (
-    <form onSubmit={submit}>
-      <label className="field" htmlFor="pj-name">
-        <span>Как к вам обращаться</span>
-        <input id="pj-name" value={name} onChange={(e) => setName(e.target.value)} required />
-      </label>
+    <form onSubmit={submit} className="max-w-lg">
+      <Field label="Как к вам обращаться" htmlFor="pj-name">
+        <Input id="pj-name" value={name} onChange={(e) => setName(e.target.value)} required />
+      </Field>
 
-      <label className="field" htmlFor="pj-email">
-        <span>Почта</span>
-        <input
+      <Field label="Почта" htmlFor="pj-email">
+        <Input
           id="pj-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-      </label>
+      </Field>
 
-      <label className="field" htmlFor="pj-tax">
-        <span>Налоговый статус: самозанятый, ИП или другое</span>
-        <input
-          id="pj-tax"
-          value={taxStatus}
-          onChange={(e) => setTaxStatus(e.target.value)}
-          required
-        />
-      </label>
+      <Field label="Налоговый статус: самозанятый, ИП или другое" htmlFor="pj-tax">
+        <Input id="pj-tax" value={taxStatus} onChange={(e) => setTaxStatus(e.target.value)} required />
+      </Field>
 
       <Consent checked={consent} onChange={setConsent} id="pj-consent" />
 
-      {error && <p className="form-error">{error}</p>}
+      {error && <p className="mb-4 text-[15px] text-[#8B1D3F]">{error}</p>}
 
-      <button className="cta" type="submit" disabled={busy}>
+      <Button type="submit" size="lg" disabled={busy}>
         {busy ? 'Минуту...' : 'Подключиться'}
-      </button>
+      </Button>
     </form>
   );
 }

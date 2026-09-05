@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Field, Input } from '@/components/ui/input';
 import { formatPrice, type Product } from '@/config/products';
+import { cn } from '@/lib/cn';
 import { Consent } from './Consent';
 
 /**
  * Покупка. Полей минимум: почта плюс имя. Плюс отдельная галочка согласия.
- * Если у продукта два тира, они выбираются здесь же.
+ * Если у продукта два варианта, они выбираются здесь же.
  */
 export function BuyForm({ products, cta }: { products: Product[]; cta: string }) {
   const [productId, setProductId] = useState(products[0].id);
@@ -40,42 +43,41 @@ export function BuyForm({ products, cta }: { products: Product[]; cta: string })
   }
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} className="max-w-lg">
       {products.length > 1 && (
-        <div style={{ marginBottom: 20 }}>
+        <div className="mb-6 flex flex-col gap-3">
           {products.map((p) => (
-            <label key={p.id} className="consent" htmlFor={`tier-${p.id}`}>
+            <label
+              key={p.id}
+              htmlFor={`tier-${p.id}`}
+              className={cn(
+                'flex gap-3 items-start rounded-lg border px-5 py-4 cursor-pointer transition-colors bg-page',
+                productId === p.id ? 'border-accent' : 'border-rule hover:border-accent/60',
+              )}
+            >
               <input
                 id={`tier-${p.id}`}
                 type="radio"
                 name="tier"
                 checked={productId === p.id}
                 onChange={() => setProductId(p.id)}
+                className="mt-1 h-4 w-4 shrink-0 accent-[#6E4C7A]"
               />
               <span>
-                <strong>{p.title}</strong>
-                <br />
-                {formatPrice(p.price)}
+                <span className="block font-medium text-ink">{p.title}</span>
+                <span className="block text-[15px] text-muted mt-0.5">{formatPrice(p.price)}</span>
               </span>
             </label>
           ))}
         </div>
       )}
 
-      <label className="field" htmlFor="buy-name">
-        <span>Как к вам обращаться</span>
-        <input
-          id="buy-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          autoComplete="name"
-          required
-        />
-      </label>
+      <Field label="Как к вам обращаться" htmlFor="buy-name">
+        <Input id="buy-name" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" required />
+      </Field>
 
-      <label className="field" htmlFor="buy-email">
-        <span>Почта, на нее придет файл</span>
-        <input
+      <Field label="Почта, на нее придет файл" htmlFor="buy-email">
+        <Input
           id="buy-email"
           type="email"
           value={email}
@@ -83,15 +85,15 @@ export function BuyForm({ products, cta }: { products: Product[]; cta: string })
           autoComplete="email"
           required
         />
-      </label>
+      </Field>
 
       <Consent checked={consent} onChange={setConsent} id="buy-consent" />
 
-      {error && <p className="form-error">{error}</p>}
+      {error && <p className="mb-4 text-[15px] text-[#8B1D3F]">{error}</p>}
 
-      <button className="cta" type="submit" disabled={busy}>
+      <Button type="submit" size="lg" disabled={busy}>
         {busy ? 'Минуту...' : cta}
-      </button>
+      </Button>
     </form>
   );
 }

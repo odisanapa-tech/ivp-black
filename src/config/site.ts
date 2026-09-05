@@ -1,21 +1,24 @@
 /**
  * Единственное место, где живут внешний адрес сайта, адреса страниц и контакты.
- * Переезд на свой домен - замена одного значения SITE_URL (или переменной
- * окружения NEXT_PUBLIC_SITE_URL), больше нигде адрес не повторяется.
+ * Переезд на свой домен - замена одного значения SITE_URL.
  */
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://ivp-black.vercel.app';
 
 export const SITE_NAME = 'Институт вокальной психологии';
+export const SITE_SHORT = 'ИВП';
 
-/** Адреса страниц. Ссылки в коде берутся отсюда, а не пишутся строкой. */
 export const ROUTES = {
   home: '/',
   atlas: '/atlas',
   peresborka: '/peresborka',
+  golosSnaruzhi: '/golos-snaruzhi',
+  obnovlenie: '/obnovlenie',
   proyavlennost: '/proyavlennost',
   formats: '/formats',
+  pedagogi: '/pedagogi',
+  demoKabinet: '/demo/kabinet',
   partner: '/partner',
   partnerCabinet: '/partner/kabinet',
   spasibo: '/spasibo',
@@ -25,7 +28,10 @@ export const ROUTES = {
   requisites: '/requisites',
 } as const;
 
-/** Полный адрес страницы. Нужен для писем и партнерских ссылок. */
+/** Якорь лестницы продуктов на главной. Пункт меню "Продукты" ведет сюда. */
+export const PRODUCTS_ANCHOR = '/#products';
+export const FILTER_ANCHOR = '/#filtr';
+
 export function absoluteUrl(path: string): string {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
@@ -35,9 +41,7 @@ export function absoluteUrl(path: string): string {
  * ЗАГЛУШКА: значения не переданы заказчиком, показываются на страницах как есть.
  */
 export const CONTACTS = {
-  /** Почта, на которую уходят заявки с /proyavlennost и /formats. */
   leadsEmail: process.env.LEADS_EMAIL || '【адрес】',
-  /** Публичный контакт в подвале. */
   publicEmail: '【адрес】',
   legalEntity: '【название юрлица】',
   inn: '【ИНН】',
@@ -46,11 +50,14 @@ export const CONTACTS = {
   bankDetails: '【банковские реквизиты】',
 } as const;
 
+/**
+ * Шапка: три пункта, без рабочего жаргона.
+ * Внутренние названия "пересборка" и "проявленность" в меню не выносятся.
+ */
 export const HEADER_LINKS = [
-  { href: ROUTES.atlas, label: 'Атлас' },
-  { href: ROUTES.peresborka, label: 'Пересборка' },
-  { href: ROUTES.proyavlennost, label: 'Проявленность' },
-  { href: ROUTES.formats, label: 'Форматы под заказ' },
+  { href: PRODUCTS_ANCHOR, label: 'Продукты' },
+  { href: ROUTES.pedagogi, label: 'Профили педагогов' },
+  { href: ROUTES.partner, label: 'Партнерам' },
 ] as const;
 
 export const FOOTER_LINKS = [

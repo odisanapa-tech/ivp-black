@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { PageHeader } from '@/components/site/PageHeader';
+import { Notice } from '@/components/ui/section';
 import { CONTACTS, SITE_URL } from '@/config/site';
 
 export const metadata: Metadata = { title: 'Оферта' };
@@ -9,15 +11,17 @@ export const metadata: Metadata = { title: 'Оферта' };
  */
 export default function OfertaPage() {
   return (
-    <article>
-      <h1>Публичная оферта</h1>
+    <>
+      <PageHeader kicker="Документы" title="Публичная оферта" />
+      <div className="container-prose pb-20 md:pb-28 prose-ivp">
+        <div className="mb-8 not-prose">
+          <Notice tone="draft">
+            Черновик. Текст написан как рабочая основа и юридической проверки не проходил. Пропуски
+            в【скобках】заполняет заказчик.
+          </Notice>
+        </div>
 
-      <div className="dev-note">
-        Черновик. Текст написан как рабочая основа и юридической проверки не проходил. Пропуски в
-        【скобках】заполняет заказчик.
-      </div>
-
-      <h2>1. Общие положения</h2>
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">1. Общие положения</h2>
       <p>
         {CONTACTS.legalEntity}, ИНН {CONTACTS.inn} (далее - исполнитель), предлагает любому
         дееспособному физическому лицу (далее - заказчик) приобрести материалы, размещенные на
@@ -28,7 +32,7 @@ export default function OfertaPage() {
         поступления оплаты.
       </p>
 
-      <h2>2. Предмет</h2>
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">2. Предмет</h2>
       <p>
         Исполнитель передает заказчику материалы в электронном виде, а при выборе варианта с
         разбором - дополнительно проводит одну личную встречу. Состав и объем каждого материала
@@ -40,35 +44,36 @@ export default function OfertaPage() {
         услуг.
       </p>
 
-      <h2>3. Цена и оплата</h2>
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">3. Цена и оплата</h2>
       <p>
         Цена указана на странице материала. Оплата производится 【способ оплаты】. Обязательство
         исполнителя возникает с момента поступления оплаты.
       </p>
 
-      <h2>4. Передача материала</h2>
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">4. Передача материала</h2>
       <p>
         Электронные материалы передаются ссылкой на скачивание сразу после оплаты: на странице
         подтверждения и письмом на указанную почту. Ссылка действует не менее 30 дней.
       </p>
       <p>Встреча по варианту с разбором согласуется 【порядок согласования встречи】.</p>
 
-      <h2>5. Возврат</h2>
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">5. Возврат</h2>
       <p>
         Порядок возврата: 【условия возврата: в какой срок, при каких условиях, каким способом】.
       </p>
 
-      <h2>6. Права на материалы</h2>
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">6. Права на материалы</h2>
       <p>
         Материалы предназначены для личного использования заказчика. Передавать их третьим лицам,
         публиковать и продавать нельзя.
       </p>
 
-      <h2>7. Реквизиты и связь</h2>
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">7. Реквизиты и связь</h2>
       <p>
         {CONTACTS.legalEntity}, ИНН {CONTACTS.inn}, {CONTACTS.legalAddress}. Почта для обращений:{' '}
         {CONTACTS.publicEmail}.
       </p>
-    </article>
+      </div>
+    </>
   );
 }

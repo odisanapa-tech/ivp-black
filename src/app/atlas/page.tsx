@@ -17,7 +17,9 @@ export default function AtlasPage() {
 
   return (
     <ProductLayout
+      kicker="Педагогический атлас"
       h1="Педагогический атлас. Навигатор по форматам работы вокального педагога"
+      authorNote="Автор: Мария Осадчая, вокальный психолог, наставник Музыкальной академии Ларисы Долиной. Двадцать лет работала вокальным педагогом."
       sections={[
         {
           body: (
@@ -141,9 +143,11 @@ export default function AtlasPage() {
       ]}
       buy={
         <>
-          <h2>Цена</h2>
-          <p className="lead">{formatPrice(product.price)}</p>
-          <p>Формат: PDF, приходит на почту сразу после оплаты.</p>
+          <h2 className="font-display text-[24px] md:text-[28px] text-ink mb-3">Цена</h2>
+          <p className="text-[20px] text-ink font-medium mb-2">{formatPrice(product.price)}</p>
+          <p className="text-[16px] text-muted mb-7">
+            Формат: PDF, приходит на почту сразу после оплаты.
+          </p>
           <BuyForm products={[product]} cta="Получить атлас" />
         </>
       }

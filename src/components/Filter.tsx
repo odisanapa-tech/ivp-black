@@ -2,13 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/cn';
 import { ROUTES } from '@/config/site';
-import s from './Filter.module.css';
 
 /**
- * Фильтр "С чего начать". Перенесен из filtr-ivp.html без изменения логики.
+ * Фильтр "Что вам подойдет". Логика перенесена из filtr-ivp.html без
+ * изменений, оформление - из дизайн-системы старого сайта.
  * Меняются только адреса (LINKS) и тексты результатов (RESULT).
  */
+
+type ResultKey = 'atlas' | 'peresborka' | 'proyavlennost' | 'formats';
 
 /** Адреса продуктов. Берутся из общего конфига, а не пишутся строкой. */
 const LINKS: Record<ResultKey, string> = {
@@ -17,8 +22,6 @@ const LINKS: Record<ResultKey, string> = {
   proyavlennost: ROUTES.proyavlennost,
   formats: ROUTES.formats,
 };
-
-type ResultKey = 'atlas' | 'peresborka' | 'proyavlennost' | 'formats';
 
 /** Тексты результатов. Ключ - продукт. */
 const RESULT: Record<ResultKey, { title: string; text: string }> = {
@@ -31,7 +34,7 @@ const RESULT: Record<ResultKey, { title: string; text: string }> = {
     text: 'Две рабочие тетради. Вы собираете свой багаж, достижения и то, что умеете и сами за способность не считаете. Из заполненных тетрадей вынимается ваш метод и то, что из него можно продавать. В тарифе с разбором добавляется встреча и карта рынка вашего города.',
   },
   proyavlennost: {
-    title: 'Профессиональная проявленность',
+    title: 'Страница и тексты',
     text: 'Собранное выносится наружу: страница и тексты, в которых вас можно узнать и найти. Это не про сайт под ключ, это про предъявление того, что у вас уже есть.',
   },
   formats: {
@@ -71,6 +74,28 @@ const STEP_TWO: { value: ResultKey; title: string; hint: string }[] = [
   },
 ];
 
+function Option({
+  title,
+  hint,
+  onClick,
+}: {
+  title: string;
+  hint: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left bg-page rounded-lg border border-rule px-5 py-4 md:px-6 md:py-5 transition-colors hover:border-accent hover:bg-accent-soft/40"
+    >
+      <span className="block font-display text-[17px] md:text-[18px] font-medium text-ink mb-1">
+        {title}
+      </span>
+      <span className="block text-[15px] text-muted leading-relaxed">{hint}</span>
+    </button>
+  );
+}
+
 export function Filter() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [result, setResult] = useState<ResultKey | null>(null);
@@ -91,24 +116,20 @@ export function Filter() {
   }
 
   return (
-    <section id="filtr">
-      <h2>С чего начать</h2>
-      <p className="lead">Два вопроса. В конце - один продукт, а не список из четырех.</p>
-
-      <div className={s.dots} aria-hidden="true">
-        <i className={`${s.dot} ${s.dotOn}`} />
-        <i className={`${s.dot} ${step !== 1 ? s.dotOn : ''}`} />
+    <div>
+      <div className="flex gap-2 mb-7" aria-hidden>
+        <i className="h-1 w-7 rounded-sm bg-accent" />
+        <i className={cn('h-1 w-7 rounded-sm', step !== 1 ? 'bg-accent' : 'bg-rule')} />
       </div>
 
       {step === 1 && (
         <div>
-          <p className={s.q}>Как сейчас устроена ваша работа?</p>
-          <div className={s.opts}>
+          <p className="font-display text-[20px] md:text-[22px] font-medium text-ink mb-5">
+            Как сейчас устроена ваша работа?
+          </p>
+          <div className="flex flex-col gap-3">
             {STEP_ONE.map((o) => (
-              <button key={o.value} className={s.opt} onClick={() => chooseFirst(o.value)}>
-                <b>{o.title}</b>
-                <span>{o.hint}</span>
-              </button>
+              <Option key={o.value} title={o.title} hint={o.hint} onClick={() => chooseFirst(o.value)} />
             ))}
           </div>
         </div>
@@ -116,16 +137,18 @@ export function Filter() {
 
       {step === 2 && (
         <div>
-          <p className={s.q}>Что сейчас ближе всего к тому, что вас беспокоит?</p>
-          <div className={s.opts}>
+          <p className="font-display text-[20px] md:text-[22px] font-medium text-ink mb-5">
+            Что сейчас ближе всего к тому, что вас беспокоит?
+          </p>
+          <div className="flex flex-col gap-3">
             {STEP_TWO.map((o) => (
-              <button key={o.value} className={s.opt} onClick={() => finish(o.value)}>
-                <b>{o.title}</b>
-                <span>{o.hint}</span>
-              </button>
+              <Option key={o.value} title={o.title} hint={o.hint} onClick={() => finish(o.value)} />
             ))}
           </div>
-          <button className={s.back} onClick={() => setStep(1)}>
+          <button
+            onClick={() => setStep(1)}
+            className="mt-5 text-[15px] text-muted underline underline-offset-4 hover:text-accent"
+          >
             Назад
           </button>
         </div>
@@ -133,25 +156,30 @@ export function Filter() {
 
       {step === 3 && result && (
         <div>
-          <div className={s.res}>
-            <p className={s.kicker}>Вам сюда</p>
-            <h2>{RESULT[result].title}</h2>
-            <p>{RESULT[result].text}</p>
-            <Link className="cta" href={LINKS[result]}>
-              Посмотреть
-            </Link>
+          <div className="bg-page rounded-lg border-l-4 border border-rule border-l-accent p-6 md:p-7">
+            <div className="kicker mb-3">Вам сюда</div>
+            <h3 className="font-display text-[22px] md:text-[25px] text-ink mb-3">
+              {RESULT[result].title}
+            </h3>
+            <p className="text-[16px] text-muted leading-relaxed mb-6">{RESULT[result].text}</p>
+            <Button asChild>
+              <Link href={LINKS[result]}>
+                Посмотреть
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
           <button
-            className={s.again}
             onClick={() => {
               setResult(null);
               setStep(1);
             }}
+            className="mt-5 text-[15px] text-muted underline underline-offset-4 hover:text-accent"
           >
             Пройти заново
           </button>
         </div>
       )}
-    </section>
+    </div>
   );
 }

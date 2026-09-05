@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
-/** Поле с кнопкой копирования. Используется для ссылок и готовых текстов. */
+/** Поле с кнопкой копирования: ссылки и готовые тексты. */
 export function CopyBox({ value, multiline = false }: { value: string; multiline?: boolean }) {
   const [copied, setCopied] = useState(false);
 
@@ -17,23 +18,17 @@ export function CopyBox({ value, multiline = false }: { value: string; multiline
   }
 
   return (
-    <div className="box">
+    <div className="rounded-lg border border-rule bg-page p-5 mb-4">
       {multiline ? (
-        <pre
-          style={{
-            whiteSpace: 'pre-wrap',
-            font: 'inherit',
-            margin: '0 0 14px',
-          }}
-        >
+        <pre className="whitespace-pre-wrap font-sans text-[15px] text-ink/90 leading-relaxed mb-4">
           {value}
         </pre>
       ) : (
-        <p style={{ margin: '0 0 14px', wordBreak: 'break-all' }}>{value}</p>
+        <p className="break-all text-[15px] text-ink/90 mb-4">{value}</p>
       )}
-      <button className="cta-secondary" onClick={copy} type="button">
+      <Button variant="secondary" size="sm" onClick={copy} type="button">
         {copied ? 'Скопировано' : 'Скопировать'}
-      </button>
+      </Button>
     </div>
   );
 }

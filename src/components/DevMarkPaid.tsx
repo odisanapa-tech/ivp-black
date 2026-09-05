@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Field, Input } from '@/components/ui/input';
 
 /**
  * Кнопка "считать оплаченным". Только режим разработки.
- * Настоящих денег на этом этапе нет, а сценарий с партнерской меткой,
- * закреплением и начислением проверить надо.
  *
  * Сумма вводится руками: цены продуктов заказчиком не назначены, поэтому
  * в заказе лежит ноль, а на нуле не видно, правильно ли посчиталось
@@ -34,23 +34,22 @@ export function DevMarkPaid({ orderId }: { orderId: number }) {
   }
 
   return (
-    <div className="dev-note">
-      <p style={{ marginTop: 0 }}>
+    <div className="rounded-lg border border-dashed border-bronze/60 bg-bronze/5 p-5 md:p-6 max-w-md">
+      <p className="text-[15px] text-ink/80 mb-4">
         <strong>Режим разработки.</strong> Этой плашки на боевом сайте нет.
       </p>
-      <label className="field" htmlFor="dev-amount">
-        <span>Сумма оплаты, рублей</span>
-        <input
+      <Field label="Сумма оплаты, рублей" htmlFor="dev-amount">
+        <Input
           id="dev-amount"
           value={rubles}
           onChange={(e) => setRubles(e.target.value)}
           inputMode="numeric"
         />
-      </label>
-      {error && <p className="form-error">{error}</p>}
-      <button className="cta" onClick={markPaid} disabled={busy}>
+      </Field>
+      {error && <p className="mb-4 text-[15px] text-[#8B1D3F]">{error}</p>}
+      <Button onClick={markPaid} disabled={busy}>
         {busy ? 'Минуту...' : 'Считать оплаченным'}
-      </button>
+      </Button>
     </div>
   );
 }

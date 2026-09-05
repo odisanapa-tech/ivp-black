@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Field, Input, Textarea } from '@/components/ui/input';
 import { Consent } from './Consent';
 
 /** Заявка вместо оплаты. Поля: имя, контакт, короткий комментарий. */
@@ -33,48 +35,33 @@ export function LeadForm({ productId, cta }: { productId: string; cta: string })
 
   if (done) {
     return (
-      <div className="card">
-        <p style={{ margin: 0 }}>
-          Заявка отправлена. Мы ответим на оставленный контакт.
-        </p>
+      <div className="max-w-lg rounded-lg border border-rule bg-page p-6">
+        <p className="text-[17px] text-ink/90">Заявка отправлена. Мы ответим на оставленный контакт.</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={submit}>
-      <label className="field" htmlFor="lead-name">
-        <span>Как к вам обращаться</span>
-        <input id="lead-name" value={name} onChange={(e) => setName(e.target.value)} required />
-      </label>
+    <form onSubmit={submit} className="max-w-lg">
+      <Field label="Как к вам обращаться" htmlFor="lead-name">
+        <Input id="lead-name" value={name} onChange={(e) => setName(e.target.value)} required />
+      </Field>
 
-      <label className="field" htmlFor="lead-contact">
-        <span>Контакт: почта или телеграм</span>
-        <input
-          id="lead-contact"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-          required
-        />
-      </label>
+      <Field label="Контакт: почта или телеграм" htmlFor="lead-contact">
+        <Input id="lead-contact" value={contact} onChange={(e) => setContact(e.target.value)} required />
+      </Field>
 
-      <label className="field" htmlFor="lead-comment">
-        <span>Коротко о задаче, если есть что добавить</span>
-        <textarea
-          id="lead-comment"
-          rows={4}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-      </label>
+      <Field label="Коротко о задаче, если есть что добавить" htmlFor="lead-comment">
+        <Textarea id="lead-comment" rows={4} value={comment} onChange={(e) => setComment(e.target.value)} />
+      </Field>
 
       <Consent checked={consent} onChange={setConsent} id="lead-consent" />
 
-      {error && <p className="form-error">{error}</p>}
+      {error && <p className="mb-4 text-[15px] text-[#8B1D3F]">{error}</p>}
 
-      <button className="cta" type="submit" disabled={busy}>
+      <Button type="submit" size="lg" disabled={busy}>
         {busy ? 'Минуту...' : cta}
-      </button>
+      </Button>
     </form>
   );
 }

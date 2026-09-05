@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PageHeader } from '@/components/site/PageHeader';
 import { query } from '@/lib/db';
 import { ACCRUAL_STATUS_LABEL, rubles } from '@/lib/partner';
 import { completeOrder, setAccrualStatus, setPartnerStatus } from './actions';
@@ -17,18 +18,24 @@ export default async function AdminPage({
 
   if (!expected) {
     return (
-      <article>
-        <h1>Админка не настроена</h1>
-        <p>Задайте переменную окружения ADMIN_TOKEN и откройте /admin?token=значение</p>
-      </article>
+      <>
+        <PageHeader title="Админка не настроена" />
+        <div className="container-prose pb-20">
+          <p className="text-[17px] text-ink/90">
+            Задайте переменную окружения ADMIN_TOKEN и откройте /admin?token=значение
+          </p>
+        </div>
+      </>
     );
   }
   if (token !== expected) {
     return (
-      <article>
-        <h1>Нет доступа</h1>
-        <p className="muted">Откройте адрес со своим токеном.</p>
-      </article>
+      <>
+        <PageHeader title="Нет доступа" />
+        <div className="container-prose pb-20">
+          <p className="text-[17px] text-muted">Откройте адрес со своим токеном.</p>
+        </div>
+      </>
     );
   }
 
@@ -66,25 +73,26 @@ export default async function AdminPage({
   ]);
 
   return (
-    <article>
-      <h1>Админка</h1>
+    <>
+      <PageHeader kicker="Служебное" title="Админка" wide />
+      <div className="container-tight pb-20 md:pb-28">
 
-      <h2>Партнеры</h2>
-      <div className="scroll-x">
-        <table className="table">
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">Партнеры</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[15px] border-collapse mb-10">
           <thead>
             <tr>
-              <th>Код</th><th>Почта</th><th>Налоговый статус</th><th>Статус</th><th></th>
+              <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Код</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Почта</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Налоговый статус</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Статус</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium"></th>
             </tr>
           </thead>
           <tbody>
             {partners.map((p) => (
               <tr key={p.id}>
-                <td>{p.code}</td>
-                <td>{p.email}</td>
-                <td>{p.tax_status ?? '-'}</td>
-                <td>{p.status}</td>
-                <td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{p.code}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{p.email}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{p.tax_status ?? '-'}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{p.status}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">
                   <form action={setPartnerStatus}>
                     <input type="hidden" name="token" value={token} />
                     <input type="hidden" name="id" value={p.id} />
@@ -93,7 +101,7 @@ export default async function AdminPage({
                       name="status"
                       value={p.status === 'active' ? 'suspended' : 'active'}
                     />
-                    <button className="cta-secondary" style={{ padding: '8px 14px', fontSize: 16 }}>
+                    <button className="rounded-md border border-rule bg-page px-3.5 py-2 text-[14px] text-ink hover:border-accent hover:text-accent transition-colors whitespace-nowrap">
                       {p.status === 'active' ? 'Приостановить' : 'Подтвердить'}
                     </button>
                   </form>
@@ -104,29 +112,29 @@ export default async function AdminPage({
         </table>
       </div>
 
-      <h2>Начисления</h2>
-      <div className="scroll-x">
-        <table className="table">
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">Начисления</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[15px] border-collapse mb-10">
           <thead>
             <tr>
-              <th>Партнер</th><th>Продукт</th><th>Ставка</th><th>Сумма</th><th>Статус</th><th></th>
+              <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Партнер</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Продукт</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Ставка</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Сумма</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Статус</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium"></th>
             </tr>
           </thead>
           <tbody>
             {accruals.map((a) => (
               <tr key={a.id}>
-                <td>{a.code}</td>
-                <td>{a.title}</td>
-                <td>{Math.round(Number(a.rate) * 100)} процентов</td>
-                <td>{rubles(a.amount)}</td>
-                <td>{ACCRUAL_STATUS_LABEL[a.status] ?? a.status}</td>
-                <td style={{ display: 'flex', gap: 8 }}>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{a.code}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{a.title}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{Math.round(Number(a.rate) * 100)} процентов</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{rubles(a.amount)}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{ACCRUAL_STATUS_LABEL[a.status] ?? a.status}</td>
+                <td className="py-3 px-2 border-b border-rule align-top"><div className="flex gap-2">
                   {a.status === 'pending_confirmation' && (
                     <form action={setAccrualStatus}>
                       <input type="hidden" name="token" value={token} />
                       <input type="hidden" name="id" value={a.id} />
                       <input type="hidden" name="status" value="payable" />
-                      <button className="cta-secondary" style={{ padding: '8px 14px', fontSize: 16 }}>
+                      <button className="rounded-md border border-rule bg-page px-3.5 py-2 text-[14px] text-ink hover:border-accent hover:text-accent transition-colors whitespace-nowrap">
                         К выплате
                       </button>
                     </form>
@@ -136,40 +144,40 @@ export default async function AdminPage({
                       <input type="hidden" name="token" value={token} />
                       <input type="hidden" name="id" value={a.id} />
                       <input type="hidden" name="status" value="paid" />
-                      <button className="cta-secondary" style={{ padding: '8px 14px', fontSize: 16 }}>
+                      <button className="rounded-md border border-rule bg-page px-3.5 py-2 text-[14px] text-ink hover:border-accent hover:text-accent transition-colors whitespace-nowrap">
                         Выплачено
                       </button>
                     </form>
                   )}
-                </td>
+                </div></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <h2>Заказы</h2>
-      <div className="scroll-x">
-        <table className="table">
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">Заказы</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[15px] border-collapse mb-10">
           <thead>
             <tr>
-              <th>Номер</th><th>Почта</th><th>Продукт</th><th>Сумма</th><th>Статус</th><th></th>
+              <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Номер</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Почта</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Продукт</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Сумма</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Статус</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium"></th>
             </tr>
           </thead>
           <tbody>
             {orders.map((o) => (
               <tr key={o.id}>
-                <td>{o.id}</td>
-                <td>{o.email}</td>
-                <td>{o.title}</td>
-                <td>{rubles(o.amount)}</td>
-                <td>{o.status}</td>
-                <td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{o.id}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{o.email}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{o.title}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{rubles(o.amount)}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{o.status}</td>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">
                   {o.status === 'paid' && (
                     <form action={completeOrder}>
                       <input type="hidden" name="token" value={token} />
                       <input type="hidden" name="id" value={o.id} />
-                      <button className="cta-secondary" style={{ padding: '8px 14px', fontSize: 16 }}>
+                      <button className="rounded-md border border-rule bg-page px-3.5 py-2 text-[14px] text-ink hover:border-accent hover:text-accent transition-colors whitespace-nowrap">
                         Продукт завершен
                       </button>
                     </form>
@@ -181,41 +189,42 @@ export default async function AdminPage({
         </table>
       </div>
 
-      <h2>Заявки</h2>
-      <table className="table">
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">Заявки</h2>
+      <table className="w-full text-[15px] border-collapse mb-10">
         <thead>
-          <tr><th>Имя</th><th>Контакт</th><th>Продукт</th><th>Когда</th></tr>
+          <tr><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Имя</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Контакт</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Продукт</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Когда</th></tr>
         </thead>
         <tbody>
           {leads.map((l) => (
             <tr key={l.id}>
-              <td>{l.name}</td>
-              <td>{l.contact}</td>
-              <td>{l.product_id}</td>
-              <td>{new Date(l.created_at).toLocaleString('ru-RU')}</td>
+              <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{l.name}</td>
+              <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{l.contact}</td>
+              <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{l.product_id}</td>
+              <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{new Date(l.created_at).toLocaleString('ru-RU')}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <h2>Письма</h2>
-      <p className="muted">
+      <h2 className="font-display text-[22px] md:text-[25px] text-ink mt-10 mb-4">Письма</h2>
+      <p className="text-[15px] text-muted mb-4">
         Настоящая отправка не подключена, письма копятся здесь.
       </p>
-      <table className="table">
+      <table className="w-full text-[15px] border-collapse mb-10">
         <thead>
-          <tr><th>Кому</th><th>Тема</th><th>Когда</th></tr>
+          <tr><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Кому</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Тема</th><th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Когда</th></tr>
         </thead>
         <tbody>
           {emails.map((m) => (
             <tr key={m.id}>
-              <td>{m.to_email}</td>
-              <td>{m.subject}</td>
-              <td>{new Date(m.created_at).toLocaleString('ru-RU')}</td>
+              <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{m.to_email}</td>
+              <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{m.subject}</td>
+              <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{new Date(m.created_at).toLocaleString('ru-RU')}</td>
             </tr>
           ))}
         </tbody>
       </table>
-    </article>
+      </div>
+    </>
   );
 }

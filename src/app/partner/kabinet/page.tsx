@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CopyBox } from '@/components/CopyBox';
+import { PageHeader } from '@/components/site/PageHeader';
+import { Notice } from '@/components/ui/section';
+import { cn } from '@/lib/cn';
 import { PARTNER } from '@/config/partner';
 import { PRODUCTS } from '@/config/products';
 import { absoluteUrl, ROUTES } from '@/config/site';
@@ -41,13 +44,19 @@ export default async function CabinetPage({
 
   if (!partner) {
     return (
-      <article>
-        <h1>Вход в кабинет</h1>
-        <p>
-          Кабинет открывается по ссылке из письма. Пароля нет. Если ссылка перестала работать,
-          оставьте почту на <Link href={ROUTES.partner}>странице программы</Link>, и придет новая.
-        </p>
-      </article>
+      <>
+        <PageHeader kicker="Партнерам" title="Вход в кабинет" />
+        <div className="container-prose pb-20 md:pb-28">
+          <p className="text-[17px] text-ink/90 leading-relaxed">
+            Кабинет открывается по ссылке из письма. Пароля нет. Если ссылка перестала работать,
+            оставьте почту на{' '}
+            <Link href={ROUTES.partner} className="link-underline">
+              странице программы
+            </Link>
+            , и придет новая.
+          </p>
+        </div>
+      </>
     );
   }
 
@@ -64,27 +73,36 @@ export default async function CabinetPage({
   const sellable = PRODUCTS.filter((p) => p.id !== 'peresborka-razbor');
 
   return (
-    <article>
-      <h1>Партнерский кабинет</h1>
-      <p className="muted">
-        {partner.name ?? partner.email}, код {partner.code}
-        {partner.status !== 'active' && ' - заявка на подтверждении'}
-      </p>
-
+    <>
+      <PageHeader
+        kicker="Партнерам"
+        title="Партнерский кабинет"
+        lead={`${partner.name ?? partner.email}, код ${partner.code}${
+          partner.status !== 'active' ? ' - заявка на подтверждении' : ''
+        }`}
+        wide
+      />
+      <div className="container-tight pb-20 md:pb-28">
       {partner.status !== 'active' && (
-        <div className="dev-note">
-          Пока заявка не подтверждена, переходы по вашей ссылке не засчитываются и вознаграждение
-          не начисляется.
+        <div className="mb-8">
+          <Notice tone="demo">
+            Пока заявка не подтверждена, переходы по вашей ссылке не засчитываются и вознаграждение
+            не начисляется.
+          </Notice>
         </div>
       )}
 
-      <nav style={{ display: 'flex', flexWrap: 'wrap', gap: 12, margin: '24px 0 32px' }}>
+      <nav className="flex flex-wrap gap-2 mb-10">
         {SCREENS.map((s) => (
           <Link
             key={s.key}
             href={`${ROUTES.partnerCabinet}?e=${s.key}`}
-            className={s.key === screen ? 'cta' : 'cta-secondary'}
-            style={{ padding: '10px 18px', fontSize: 17 }}
+            className={cn(
+              'rounded-md px-4 py-2.5 text-[15px] transition-colors border',
+              s.key === screen
+                ? 'bg-accent text-white border-accent'
+                : 'bg-page text-ink border-rule hover:border-accent hover:text-accent',
+            )}
           >
             {s.label}
           </Link>
@@ -93,13 +111,13 @@ export default async function CabinetPage({
 
       {screen === 'link' && (
         <section>
-          <h2>Ваша ссылка</h2>
+          <h2 className="font-display text-[24px] md:text-[28px] text-ink mb-4">Ваша ссылка</h2>
           <p>Общая ссылка на сайт:</p>
           <CopyBox value={refLink(ROUTES.home, partner.code)} />
           <p>Отдельная ссылка на каждый продукт:</p>
           {sellable.map((p) => (
             <div key={p.id}>
-              <p className="muted" style={{ marginBottom: 6 }}>{p.title}</p>
+              <p className="text-[15px] text-muted" style={{ marginBottom: 6 }}>{p.title}</p>
               <CopyBox value={refLink(p.href, partner.code)} />
             </div>
           ))}
@@ -108,55 +126,58 @@ export default async function CabinetPage({
 
       {screen === 'materials' && (
         <section>
-          <h2>Готовые тексты</h2>
+          <h2 className="font-display text-[24px] md:text-[28px] text-ink mb-4">Готовые тексты</h2>
           <p>
             Можно брать как есть или править под свой голос. Ссылка внутри уже с вашим кодом.
           </p>
 
-          <h3>Письмо ученикам: атлас</h3>
+          <h3 className="font-display text-[19px] text-ink mt-8 mb-3">Письмо ученикам: атлас</h3>
           <CopyBox
             multiline
             value={`Здравствуйте!\n\nПопался материал, который мне самой пригодился, и я подумала о вас.\n\nЭто разбор шести форматов работы вокального педагога: кто в каждом заказчик, с каким запросом приходят, какая у вас роль и где ваши границы. Читать подряд не нужно, это скорее навигатор.\n\nПосмотреть: ${refLink(ROUTES.atlas, partner.code)}`}
           />
 
-          <h3>Пост в канал: атлас</h3>
+          <h3 className="font-display text-[19px] text-ink mt-8 mb-3">Пост в канал: атлас</h3>
           <CopyBox
             multiline
             value={`Подготовить ребенка к конкурсу и провести вокальную медитацию для взрослого - это разные виды работы. А называем мы это одинаково: уроки вокала.\n\nВ «Педагогическом атласе» шесть форматов разобраны по восьми осям: кто заказчик, с каким запросом приходят, какая у педагога роль, где границы. И к каждому формату - как объяснить свою ценность тому, кто платит.\n\n${refLink(ROUTES.atlas, partner.code)}`}
           />
 
-          <h3>Письмо ученикам: пересборка</h3>
+          <h3 className="font-display text-[19px] text-ink mt-8 mb-3">Письмо ученикам: пересборка</h3>
           <CopyBox
             multiline
             value={`Здравствуйте!\n\nЕсли у вас накопился опыт, а собрать его во что-то свое не выходит - посмотрите «Профессиональную пересборку». Это две рабочие тетради, из которых вынимается ваш метод и то, что из него можно предлагать людям.\n\n${refLink(ROUTES.peresborka, partner.code)}`}
           />
 
-          <p className="muted">
-            【дополнительные тексты и материалы для партнеров: если у заказчика есть свои, они
-            заменят эти черновики】
-          </p>
+          <h3 className="font-display text-[19px] text-ink mt-8 mb-3">
+            Письмо ученикам: голос снаружи
+          </h3>
+          <CopyBox
+            multiline
+            value={`Здравствуйте!\n\nЕсли вам давно хочется рассказывать о себе, а каждый пост приходится начинать с нуля - посмотрите «Ваш голос снаружи». Это рабочая тетрадь на несколько дней, без встреч и созвонов. Заканчивается не планом, а опубликованным постом.\n\n${refLink(ROUTES.golosSnaruzhi, partner.code)}`}
+          />
         </section>
       )}
 
       {screen === 'visits' && (
         <section>
-          <h2>Переходы</h2>
+          <h2 className="font-display text-[24px] md:text-[28px] text-ink mb-4">Переходы</h2>
           {visits.length === 0 ? (
-            <p className="muted">Переходов пока нет.</p>
+            <p className="text-[15px] text-muted">Переходов пока нет.</p>
           ) : (
-            <div className="scroll-x">
-              <table className="table">
+            <div className="overflow-x-auto">
+              <table className="w-full text-[15px] border-collapse">
                 <thead>
                   <tr>
-                    <th>День</th>
-                    <th>Переходов</th>
+                    <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">День</th>
+                    <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Переходов</th>
                   </tr>
                 </thead>
                 <tbody>
                   {visits.map((v) => (
                     <tr key={v.day}>
-                      <td>{v.day}</td>
-                      <td>{v.count}</td>
+                      <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{v.day}</td>
+                      <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{v.count}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -168,29 +189,29 @@ export default async function CabinetPage({
 
       {screen === 'accruals' && (
         <section>
-          <h2>Начисления</h2>
+          <h2 className="font-display text-[24px] md:text-[28px] text-ink mb-4">Начисления</h2>
           {accruals.length === 0 ? (
-            <p className="muted">Начислений пока нет.</p>
+            <p className="text-[15px] text-muted">Начислений пока нет.</p>
           ) : (
-            <div className="scroll-x">
-              <table className="table">
+            <div className="overflow-x-auto">
+              <table className="w-full text-[15px] border-collapse">
                 <thead>
                   <tr>
-                    <th>Продукт</th>
-                    <th>Дата</th>
-                    <th>Ставка</th>
-                    <th>Сумма</th>
-                    <th>Статус</th>
+                    <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Продукт</th>
+                    <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Дата</th>
+                    <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Ставка</th>
+                    <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Сумма</th>
+                    <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Статус</th>
                   </tr>
                 </thead>
                 <tbody>
                   {accruals.map((a, i) => (
                     <tr key={i}>
-                      <td>{a.title}</td>
-                      <td>{new Date(a.created_at).toLocaleDateString('ru-RU')}</td>
-                      <td>{Math.round(Number(a.rate) * 100)} процентов</td>
-                      <td>{rubles(a.amount)}</td>
-                      <td>{ACCRUAL_STATUS_LABEL[a.status] ?? a.status}</td>
+                      <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{a.title}</td>
+                      <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{new Date(a.created_at).toLocaleDateString('ru-RU')}</td>
+                      <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{Math.round(Number(a.rate) * 100)} процентов</td>
+                      <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{rubles(a.amount)}</td>
+                      <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{ACCRUAL_STATUS_LABEL[a.status] ?? a.status}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -202,25 +223,25 @@ export default async function CabinetPage({
 
       {screen === 'students' && (
         <section>
-          <h2>Мои ученики</h2>
-          <p className="muted">
+          <h2 className="font-display text-[24px] md:text-[28px] text-ink mb-4">Мои ученики</h2>
+          <p className="text-[15px] text-muted">
             Закрепленные за вами навсегда. Больше о них здесь ничего не показывается.
           </p>
           {students.length === 0 ? (
-            <p className="muted">Пока никого.</p>
+            <p className="text-[15px] text-muted">Пока никого.</p>
           ) : (
-            <table className="table">
+            <table className="w-full text-[15px] border-collapse">
               <thead>
                 <tr>
-                  <th>Имя</th>
-                  <th>Закреплен</th>
+                  <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Имя</th>
+                  <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Закреплен</th>
                 </tr>
               </thead>
               <tbody>
                 {students.map((s, i) => (
                   <tr key={i}>
-                    <td>{s.name ?? 'Без имени'}</td>
-                    <td>{new Date(s.first_seen_at).toLocaleDateString('ru-RU')}</td>
+                    <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{s.name ?? 'Без имени'}</td>
+                    <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{new Date(s.first_seen_at).toLocaleDateString('ru-RU')}</td>
                   </tr>
                 ))}
               </tbody>
@@ -231,48 +252,49 @@ export default async function CabinetPage({
 
       {screen === 'payouts' && (
         <section>
-          <h2>Выплаты</h2>
+          <h2 className="font-display text-[24px] md:text-[28px] text-ink mb-4">Выплаты</h2>
           {payouts.length === 0 ? (
-            <p className="muted">Выплат пока не было.</p>
+            <p className="text-[15px] text-muted">Выплат пока не было.</p>
           ) : (
-            <table className="table">
+            <table className="w-full text-[15px] border-collapse">
               <thead>
                 <tr>
-                  <th>Дата</th>
-                  <th>Продукт</th>
-                  <th>Сумма</th>
+                  <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Дата</th>
+                  <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Продукт</th>
+                  <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Сумма</th>
                 </tr>
               </thead>
               <tbody>
                 {payouts.map((p, i) => (
                   <tr key={i}>
-                    <td>{p.paid_at ? new Date(p.paid_at).toLocaleDateString('ru-RU') : '-'}</td>
-                    <td>{p.title}</td>
-                    <td>{rubles(p.amount)}</td>
+                    <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{p.paid_at ? new Date(p.paid_at).toLocaleDateString('ru-RU') : '-'}</td>
+                    <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{p.title}</td>
+                    <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{rubles(p.amount)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
 
-          <h3>Реквизиты и налоговый статус</h3>
-          <table className="table">
+          <h3 className="font-display text-[19px] text-ink mt-8 mb-3">Реквизиты и налоговый статус</h3>
+          <table className="w-full text-[15px] border-collapse">
             <tbody>
               <tr>
-                <th>Налоговый статус</th>
-                <td>{partner.tax_status ?? 'не указан'}</td>
+                <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Налоговый статус</th>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{partner.tax_status ?? 'не указан'}</td>
               </tr>
               <tr>
-                <th>Реквизиты для перевода</th>
-                <td>{partner.payout_details ?? 'не указаны'}</td>
+                <th className="text-left py-3 px-2 border-b border-rule text-[14px] text-muted font-medium">Реквизиты для перевода</th>
+                <td className="text-left py-3 px-2 border-b border-rule text-ink align-top">{partner.payout_details ?? 'не указаны'}</td>
               </tr>
             </tbody>
           </table>
-          <p className="muted">
+          <p className="text-[15px] text-muted mt-4">
             Изменить реквизиты пока можно только письмом: 【порядок изменения реквизитов】
           </p>
         </section>
       )}
-    </article>
+      </div>
+    </>
   );
 }
