@@ -43,6 +43,11 @@ CREATE TABLE IF NOT EXISTS orders (
   -- а открывают с компьютера.
   download_token       text UNIQUE,
   download_expires_at  timestamptz,
+  -- Партнерский код, снятый с cookie в момент оформления заказа.
+  -- Хранится здесь, а не читается из cookie при подтверждении оплаты:
+  -- уведомление эквайринга приходит от платежной системы, в нем браузера
+  -- покупателя нет и cookie взять неоткуда.
+  ref_code             text,
   created_at    timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS orders_user_idx ON orders (user_id);
