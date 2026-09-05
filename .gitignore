@@ -1,0 +1,24 @@
+# Секреты. Строка подключения к базе в репозиторий не попадает ни в каком виде.
+.env*
+!.env.example
+
+# Зависимости
+node_modules/
+.pnp
+.pnp.js
+
+# Сборка
+.next/
+out/
+build/
+dist/
+
+# Vercel
+.vercel
+
+# Логи и мусор
+*.log
+npm-debug.log*
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
